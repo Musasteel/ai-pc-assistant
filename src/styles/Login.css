@@ -59,6 +59,7 @@
   font-size: 14px;
   transition: background-color 0.2s;
   min-width: 100px; /* Ensures buttons have consistent width */
+  color: black;
 }
 
 .auth-button:hover, .google-button:hover {

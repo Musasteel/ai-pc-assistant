@@ -2,7 +2,11 @@ from flask import Flask, request, jsonify
 from groq import Groq
 import os
 from flask_cors import CORS
+from dotenv import load_dotenv
+from pathlib import Path
 
+# Load environment variables from ~/.env file
+load_dotenv(Path.home() / '.env')
 
 app = Flask(__name__)
 CORS(app)
