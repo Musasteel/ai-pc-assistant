@@ -34,6 +34,21 @@ function App() {
         }
     };
 
+    // Updated function to handle different key combinations
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            if (e.ctrlKey) {
+                // Allow new line with Ctrl+Enter
+                setQuestion(prev => prev + '\n');
+                e.preventDefault();
+            } else if (!e.shiftKey) {
+                // Send message with Enter
+                e.preventDefault();
+                askAssistant();
+            }
+        }
+    };
+
     // Show loading state while checking authentication
     if (authLoading) {
         return <div>Loading...</div>;
@@ -68,7 +83,17 @@ function App() {
                 cols="50"
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
-                placeholder="Ask a question..."
+                onKeyDown={handleKeyPress}  // Changed from onKeyPress to onKeyDown
+                placeholder="Ask a question... (Press Enter to send, Ctrl+Enter for new line)"
+                style={{
+                    width: "100%",
+                    padding: "10px",
+                    marginBottom: "10px",
+                    borderRadius: "5px",
+                    border: "1px solid #ccc",
+                    resize: "vertical",  // Allows vertical resizing only
+                    minHeight: "100px",  // Minimum height
+                }}
             />
             <br />
             <button
