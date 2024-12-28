@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
 /* Layout */
 .app-container {
     height: 100vh;
@@ -175,8 +177,13 @@
 }
 
 .user-message {
-    background-color: #e3f2fd;
-    margin-left: 2rem;
+    align-self: flex-end;
+    background-color: #007bff;
+    color: white;
+    border-radius: 15px;
+    padding: 10px 15px;
+    max-width: 70%;
+    margin-left: auto;
 }
 
 .assistant-message {
@@ -197,6 +204,7 @@
     gap: 1rem;
     position: relative;
     min-height: 100%;
+    padding: 1rem;
 }
 
 /* Input Area */
@@ -368,21 +376,21 @@
 
 /* Dark mode styles - more comprehensive */
 body.dark-mode {
-    background: #1a1a1a;
+    background: #1e1f20;
     color: white;
 }
 
 body.dark-mode .app-container {
-    background: #1a1a1a;
+    background: #282a2c;
 }
 
 body.dark-mode .side-nav {
-    background: #2d2d2d;
+    background: #282a2c;
     border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 body.dark-mode .chat-area {
-    background: #1a1a1a;
+    background: #1e1f20;
     color: white;
 }
 
@@ -396,12 +404,12 @@ body.dark-mode .message {
 
 body.dark-mode .user-message,
 body.dark-mode .assistant-message {
-    background: #2d2d2d;
+    background: #1e1f20;
     color: white;
 }
 
 body.dark-mode .chat-input {
-    background: #2d2d2d;
+    background: #1e1f20;
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: white;
 }
@@ -441,7 +449,7 @@ body.dark-mode .side-nav li.active {
 }
 
 body.dark-mode .input-container {
-    background: #2d2d2d;
+    background: #1e1f20;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -457,7 +465,7 @@ body.dark-mode .sign-out-button:hover {
 
 /* Dark mode top nav styles */
 body.dark-mode .top-nav {
-    background: #2d2d2d;
+    background: #1e1f20;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -553,6 +561,7 @@ body.dark-mode .menu-button {
     max-width: 0;
     font-size: 2.5rem;
     font-weight: bold;
+    font-family: 'Poppins', sans-serif;
     background-image: linear-gradient(-20deg, #fc6076 0%, #ff9a44 100%);
     -webkit-background-clip: text;
     background-clip: text;

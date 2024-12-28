@@ -129,22 +129,25 @@ function App() {
                 <div className="chat-area">
                     <div className="chat-container">
                         <div className="messages-container">
-                            <div className="welcome-message">
-                                <div className="typewriter">
-                                    Hello, Welcome to the AI PC Builder
+                            {messages.length === 0 ? (
+                                <div className="welcome-message">
+                                    <div className="typewriter">
+                                        Hello, Welcome to the AI PC Builder
+                                    </div>
                                 </div>
-                            </div>
-                            {messages.map((message, index) => (
-                                <div key={index} 
-                                    className={`message ${message.type === 'user' ? 'user-message' : 'assistant-message'}`}
-                                >
-                                    {message.type === 'user' ? (
-                                        <ReactMarkdown>{message.content}</ReactMarkdown>
-                                    ) : (
-                                        <TypewriterText text={message.content} />
-                                    )}
-                                </div>
-                            ))}
+                            ) : (
+                                messages.map((message, index) => (
+                                    <div key={index} 
+                                        className={`message ${message.type === 'user' ? 'user-message' : 'assistant-message'}`}
+                                    >
+                                        {message.type === 'user' ? (
+                                            <ReactMarkdown>{message.content}</ReactMarkdown>
+                                        ) : (
+                                            <TypewriterText text={message.content} />
+                                        )}
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
 
