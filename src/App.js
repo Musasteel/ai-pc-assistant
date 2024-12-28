@@ -3,6 +3,8 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from './firebase-config';
 import Login from './components/Login';
 import './App.css';
+import ReactMarkdown from 'react-markdown';
+import TypewriterText from './components/TypewriterText';
 
 function App() {
     const [question, setQuestion] = useState("");
@@ -102,7 +104,11 @@ function App() {
                                 <div key={index} 
                                     className={`message ${message.type === 'user' ? 'user-message' : 'assistant-message'}`}
                                 >
-                                    <p>{message.content}</p>
+                                    {message.type === 'user' ? (
+                                        <ReactMarkdown>{message.content}</ReactMarkdown>
+                                    ) : (
+                                        <TypewriterText text={message.content} />
+                                    )}
                                 </div>
                             ))}
                         </div>

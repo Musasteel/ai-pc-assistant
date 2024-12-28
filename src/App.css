@@ -200,3 +200,36 @@
     margin-top: 12px;
     margin-bottom: 8px;
 }
+
+/* Add these to your existing CSS */
+.assistant-message strong {
+    font-weight: 600;
+    color: #2c3e50;  /* Darker color for headers */
+    display: block;  /* Makes headers appear on their own line */
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-size: 1.1em;
+}
+
+.assistant-message p {
+    white-space: pre-line;
+    margin: 0;
+}
+
+/* Style for bold text within paragraphs */
+.assistant-message p strong {
+    display: inline;  /* Keep bold text inline within paragraphs */
+    margin: 0;
+    font-size: inherit;
+}
+
+/* Add to your existing CSS */
+.assistant-message .typing::after {
+    content: '▋';
+    display: inline-block;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
