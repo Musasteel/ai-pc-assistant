@@ -11,6 +11,8 @@ function App() {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [user, authLoading] = useAuthState(auth);
+    const [isSideNavOpen, setIsSideNavOpen] = useState(true);
+    const [isDarkMode, setIsDarkMode] = useState(false);
 
     const askAssistant = async () => {
         if (!question.trim()) {
@@ -68,6 +70,11 @@ function App() {
         }
     };
 
+    const toggleTheme = () => {
+        setIsDarkMode(!isDarkMode);
+        document.body.classList.toggle('dark-mode');
+    };
+
     if (authLoading) {
         return <div>Loading...</div>;
     }
@@ -80,22 +87,42 @@ function App() {
         <div className="app-container">
             <nav className="top-nav">
                 <div className="nav-brand">AI PC Assistant</div>
-                <button 
-                    onClick={() => auth.signOut()}
-                    className="sign-out-button"
-                >
-                    Sign Out
-                </button>
+                <div className="nav-controls">
+                    <button 
+                        className="theme-toggle"
+                        onClick={toggleTheme}
+                    >
+                        {isDarkMode ? '☀️' : '🌙'}
+                    </button>
+                    <button 
+                        onClick={() => auth.signOut()}
+                        className="sign-out-button"
+                    >
+                        Sign Out
+                    </button>
+                </div>
             </nav>
 
             <div className="main-content">
-                <nav className="side-nav">
-                    <ul>
-                        <li className="active">Chat</li>
-                        <li>History</li>
-                        <li>Settings</li>
-                    </ul>
-                </nav>
+                <div className={`side-nav ${isSideNavOpen ? 'open' : 'closed'}`}>
+                    <div className="nav-content">
+                        <ul>
+                            <li className="active">Chat</li>
+                            <li>History</li>
+                        </ul>
+                    </div>
+                    <div className="nav-footer">
+                        <button 
+                            className="nav-toggle"
+                            onClick={() => setIsSideNavOpen(!isSideNavOpen)}
+                        >
+                            {isSideNavOpen ? '◄' : '►'}
+                        </button>
+                        <button className="settings-button">
+                            ⚙️
+                        </button>
+                    </div>
+                </div>
 
                 <div className="chat-area">
                     <div className="chat-container">

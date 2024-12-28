@@ -36,9 +36,97 @@
 /* Side Navigation */
 .side-nav {
     width: 250px;
-    background-color: #f7f7f8;
-    border-right: 1px solid #e5e5e5;
+    min-width: 250px;
+    position: relative;
+    transition: all 0.2s ease;
+    transform: translateX(0);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.03);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Nav content area */
+.nav-content {
+    flex: 1;
     padding: 20px;
+}
+
+/* Nav footer */
+.nav-footer {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Toggle button styling */
+.nav-toggle {
+    padding: 8px;
+    background: transparent;
+    border: none;
+    color: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1 !important;
+    visibility: visible !important;
+    width: 30px;
+    min-width: 30px;
+}
+
+.nav-toggle:hover {
+    color: rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+}
+
+/* Settings button */
+.settings-button {
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    color: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.settings-button:hover {
+    color: rgba(0, 0, 0, 0.8);
+    transform: rotate(30deg);
+}
+
+/* Adjust closed state */
+.side-nav.closed {
+    min-width: 30px;
+    width: 30px;
+}
+
+.side-nav.closed .nav-footer {
+    padding: 20px 0;
+    justify-content: center;
+}
+
+.side-nav.closed .nav-toggle {
+    padding: 8px 0;
+    margin: 0;
+}
+
+/* Hide specific elements when closed */
+.side-nav.closed .nav-content,
+.side-nav.closed .settings-button {
+    opacity: 0;
+    visibility: hidden;
+    display: none;
 }
 
 .side-nav ul {
@@ -232,4 +320,157 @@
 
 @keyframes blink {
     50% { opacity: 0; }
+}
+
+/* Hide nav content when closed */
+.side-nav.closed ul {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.side-nav.open ul {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+/* Theme toggle button */
+.nav-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.theme-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* Dark mode styles - more comprehensive */
+body.dark-mode {
+    background: #1a1a1a;
+    color: white;
+}
+
+body.dark-mode .app-container {
+    background: #1a1a1a;
+}
+
+body.dark-mode .side-nav {
+    background: #2d2d2d;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .chat-area {
+    background: #1a1a1a;
+    color: white;
+}
+
+body.dark-mode .chat-container {
+    color: white;
+}
+
+body.dark-mode .message {
+    color: white;
+}
+
+body.dark-mode .user-message,
+body.dark-mode .assistant-message {
+    background: #2d2d2d;
+    color: white;
+}
+
+body.dark-mode .chat-input {
+    background: #2d2d2d;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+body.dark-mode .chat-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+body.dark-mode .nav-toggle,
+body.dark-mode .settings-button {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+body.dark-mode .nav-toggle:hover,
+body.dark-mode .settings-button:hover {
+    color: white;
+}
+
+body.dark-mode .nav-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .chat-title {
+    color: white;
+}
+
+body.dark-mode .side-nav li {
+    color: white;
+}
+
+body.dark-mode .side-nav li:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .side-nav li.active {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+body.dark-mode .input-container {
+    background: #2d2d2d;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .sign-out-button {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .sign-out-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Dark mode top nav styles */
+body.dark-mode .top-nav {
+    background: #2d2d2d;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .nav-brand {
+    color: white;
+}
+
+body.dark-mode .theme-toggle {
+    color: white;
+}
+
+body.dark-mode .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure consistent dark mode for all nav elements */
+body.dark-mode .nav-controls button {
+    color: white;
+    background: transparent;
+}
+
+body.dark-mode .nav-controls button:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
