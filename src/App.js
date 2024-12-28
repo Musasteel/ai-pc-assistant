@@ -6,24 +6,28 @@ import './App.css';
 
 function App() {
     const [question, setQuestion] = useState("");
-    const [response, setResponse] = useState("");
+    const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [user, authLoading] = useAuthState(auth);
 
     const askAssistant = async () => {
         if (!question.trim()) {
-            setResponse("Please enter a question");
             return;
         }
 
+        const userMessage = question;
+        setMessages(prevMessages => [...prevMessages, 
+            { type: 'user', content: userMessage }
+        ]);
+        
         setLoading(true);
-        setResponse("");
+        setQuestion("");
 
         try {
             const res = await fetch("http://127.0.0.1:5000/api/ask", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ question }),
+                body: JSON.stringify({ question: userMessage }),
             });
 
             if (!res.ok) {
@@ -33,33 +37,35 @@ function App() {
             const data = await res.json();
 
             if (data.reply) {
-                setResponse(data.reply);
+                setMessages(prevMessages => [...prevMessages, 
+                    { type: 'assistant', content: data.reply }
+                ]);
             } else {
-                setResponse(data.error || "No response received.");
+                setMessages(prevMessages => [...prevMessages, 
+                    { type: 'assistant', content: data.error || "No response received." }
+                ]);
             }
         } catch (err) {
-            setResponse(`Error: ${err.message}. Make sure the backend server is running at http://127.0.0.1:5000`);
+            setMessages(prevMessages => [...prevMessages, 
+                { type: 'assistant', content: `Error: ${err.message}. Make sure the backend server is running at http://127.0.0.1:5000` }
+            ]);
         } finally {
             setLoading(false);
         }
     };
 
-    // Updated function to handle different key combinations
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             if (e.ctrlKey) {
-                // Allow new line with Ctrl+Enter
                 setQuestion(prev => prev + '\n');
                 e.preventDefault();
             } else if (!e.shiftKey) {
-                // Send message with Enter
                 e.preventDefault();
                 askAssistant();
             }
         }
     };
 
-    // Show loading state while checking authentication
     if (authLoading) {
         return <div>Loading...</div>;
     }
@@ -70,7 +76,6 @@ function App() {
 
     return (
         <div className="app-container">
-            {/* Top Navigation */}
             <nav className="top-nav">
                 <div className="nav-brand">AI PC Assistant</div>
                 <button 
@@ -81,9 +86,7 @@ function App() {
                 </button>
             </nav>
 
-            {/* Main Content Area */}
             <div className="main-content">
-                {/* Side Navigation */}
                 <nav className="side-nav">
                     <ul>
                         <li className="active">Chat</li>
@@ -92,20 +95,16 @@ function App() {
                     </ul>
                 </nav>
 
-                {/* Chat Area */}
                 <div className="chat-area">
                     <div className="chat-container">
                         <div className="messages-container">
-                            {question && (
-                                <div className="message user-message">
-                                    <p>{question}</p>
+                            {messages.map((message, index) => (
+                                <div key={index} 
+                                    className={`message ${message.type === 'user' ? 'user-message' : 'assistant-message'}`}
+                                >
+                                    <p>{message.content}</p>
                                 </div>
-                            )}
-                            {response && (
-                                <div className="message assistant-message">
-                                    <p>{response}</p>
-                                </div>
-                            )}
+                            ))}
                         </div>
                     </div>
 
@@ -115,7 +114,7 @@ function App() {
                             rows="4"
                             value={question}
                             onChange={(e) => setQuestion(e.target.value)}
-                            onKeyDown={handleKeyPress}  // Added keyboard shortcuts
+                            onKeyDown={handleKeyPress}
                             placeholder="Ask a question... (Press Enter to send, Ctrl+Enter for new line)"
                         />
                         <button
