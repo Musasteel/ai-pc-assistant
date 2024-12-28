@@ -86,7 +86,15 @@ function App() {
     return (
         <div className="app-container">
             <nav className="top-nav">
-                <div className="nav-brand">AI PC Assistant</div>
+                <div className="nav-brand">
+                    <button 
+                        className="hamburger-menu"
+                        onClick={() => setIsSideNavOpen(!isSideNavOpen)}
+                    >
+                        ☰
+                    </button>
+                    <span>AI PC Assistant</span>
+                </div>
                 <div className="nav-controls">
                     <button 
                         className="theme-toggle"
@@ -112,12 +120,6 @@ function App() {
                         </ul>
                     </div>
                     <div className="nav-footer">
-                        <button 
-                            className="nav-toggle"
-                            onClick={() => setIsSideNavOpen(!isSideNavOpen)}
-                        >
-                            {isSideNavOpen ? '◄' : '►'}
-                        </button>
                         <button className="settings-button">
                             ⚙️
                         </button>
@@ -127,6 +129,11 @@ function App() {
                 <div className="chat-area">
                     <div className="chat-container">
                         <div className="messages-container">
+                            <div className="welcome-message">
+                                <div className="typewriter">
+                                    Hello, Welcome to the AI PC Builder
+                                </div>
+                            </div>
                             {messages.map((message, index) => (
                                 <div key={index} 
                                     className={`message ${message.type === 'user' ? 'user-message' : 'assistant-message'}`}
