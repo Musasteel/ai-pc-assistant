@@ -178,8 +178,8 @@
 
 .user-message {
     align-self: flex-end;
-    background-color: #007bff;
-    color: white;
+    background-color: #f3f3f3;
+    color: #151515;
     border-radius: 15px;
     padding: 10px 15px;
     max-width: 70%;
@@ -187,7 +187,7 @@
 }
 
 .assistant-message {
-    background-color: #f5f5f5;
+    background-color: #a27d7d00;
     margin-right: 2rem;
 }
 
@@ -381,16 +381,16 @@ body.dark-mode {
 }
 
 body.dark-mode .app-container {
-    background: #282a2c;
+    background: linear-gradient(to right,  #1e1f20 17%, #282a2c 17%);
 }
 
 body.dark-mode .side-nav {
-    background: #282a2c;
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    background: #1e1f20;
+    border-right: 1px solid #282a2c;
 }
 
 body.dark-mode .chat-area {
-    background: #1e1f20;
+    background: #282a2c;
     color: white;
 }
 
@@ -404,7 +404,7 @@ body.dark-mode .message {
 
 body.dark-mode .user-message,
 body.dark-mode .assistant-message {
-    background: #1e1f20;
+    background: #282a2c;
     color: white;
 }
 
@@ -450,7 +450,7 @@ body.dark-mode .side-nav li.active {
 
 body.dark-mode .input-container {
     background: #1e1f20;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid #282a2c;
 }
 
 body.dark-mode .sign-out-button {
@@ -465,8 +465,8 @@ body.dark-mode .sign-out-button:hover {
 
 /* Dark mode top nav styles */
 body.dark-mode .top-nav {
-    background: #1e1f20;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(to right,  #1e1f20 17%, #282a2c 17%);
+    border-bottom: 1px solid transparent;
 }
 
 body.dark-mode .nav-brand {
@@ -583,5 +583,30 @@ body.dark-mode .menu-button {
 
 /* Dark mode support */
 body.dark-mode .typewriter {
+    background-image: linear-gradient(-20deg, #1e90ff 0%, #00bfff 100%);
     border-right-color: #fff;
+}
+
+/* Blink caret animation */
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: #fc6076; }
+}
+
+/* Dark mode blink caret */
+body.dark-mode .typewriter {
+    border-right-color: #fff;
+}
+
+/* Separate keyframes for dark mode */
+@keyframes blink-caret-dark {
+    from, to { border-color: transparent; }
+    50% { border-color: #1e90ff; }
+}
+
+/* Apply dark mode blink caret animation */
+body.dark-mode .typewriter {
+    animation: 
+        typing 3.5s steps(40, end) forwards,
+        blink-caret-dark .75s step-end infinite;
 }
