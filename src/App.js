@@ -97,12 +97,6 @@ function App() {
                 </div>
                 <div className="nav-controls">
                     <button 
-                        className="theme-toggle"
-                        onClick={toggleTheme}
-                    >
-                        {isDarkMode ? '☀️' : '🌙'}
-                    </button>
-                    <button 
                         onClick={() => auth.signOut()}
                         className="sign-out-button"
                     >
@@ -122,6 +116,12 @@ function App() {
                     <div className="nav-footer">
                         <button className="settings-button">
                             ⚙️
+                        </button>
+                        <button 
+                            className="theme-toggle"
+                            onClick={toggleTheme}
+                        >
+                            {isDarkMode ? '☀️' : '🌙'}
                         </button>
                     </div>
                 </div>
