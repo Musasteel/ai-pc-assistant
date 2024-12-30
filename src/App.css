@@ -29,7 +29,7 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background: #1e1f20;
+    background: #ffffff;
     border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -507,7 +507,7 @@ body.dark-mode .menu-button {
     font-size: 24px;
     cursor: pointer;
     padding: 5px;
-    color: white;
+    color: rgb(0, 0, 0);
 }
 
 .hamburger-menu:hover {
@@ -596,7 +596,7 @@ body.dark-mode .typewriter {
     display: flex;
     align-items: center;
     padding: 0 15px;
-    background: #1e1f20;
+    background: #ffffff;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     position: sticky;
     top: 0;
@@ -604,7 +604,7 @@ body.dark-mode .typewriter {
 }
 
 .nav-title {
-    color: white;
+    color: rgb(0, 0, 0);
     font-size: 1.5rem;
     font-weight: bold;
     margin-left: 10px;
@@ -616,4 +616,16 @@ body.dark-mode .typewriter {
     top: 15px;
     right: 15px;
     z-index: 1001;
+}
+
+body.dark-mode .nav-title {
+    color: white;
+}
+
+body.dark-mode .nav-header {
+    background: #1e1f20;
+}
+
+body.dark-mode .hamburger-menu {
+    color: white;
 }
