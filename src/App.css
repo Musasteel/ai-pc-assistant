@@ -9,35 +9,14 @@
 
 /* Top Navigation */
 .top-nav {
-    height: 60px;
-    background-color: white;
-    border-bottom: 1px solid #e5e5e5;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 10px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-}
-
-.nav-brand {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-left: 5px;
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    display: none;
 }
 
 /* Main Content Area */
 .main-content {
     display: flex;
-    height: calc(100vh - 60px);
-    margin-top: 60px;
+    height: 100vh;
+    margin-top: 0;
 }
 
 /* Side Navigation */
@@ -49,9 +28,9 @@
     transform: translateX(0);
     display: flex;
     flex-direction: column;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.03);
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    height: 100vh;
+    background: #1e1f20;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Nav content area */
@@ -114,8 +93,8 @@
 
 /* Adjust closed state */
 .side-nav.closed {
-    min-width: 0;
-    width: 0;
+    width: 60px;
+    min-width: 60px;
 }
 
 .side-nav.closed .nav-footer {
@@ -527,8 +506,8 @@ body.dark-mode .menu-button {
     border: none;
     font-size: 24px;
     cursor: pointer;
-    padding: 5px 0 5px 0;
-    color: inherit;
+    padding: 5px;
+    color: white;
 }
 
 .hamburger-menu:hover {
@@ -609,4 +588,32 @@ body.dark-mode .typewriter {
     animation: 
         typing 3.5s steps(40, end) forwards,
         blink-caret-dark .75s step-end infinite;
+}
+
+/* Add nav-header styles */
+.nav-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    background: #1e1f20;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-title {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+/* Add styles for sign out button container */
+.sign-out-container {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 1001;
 }

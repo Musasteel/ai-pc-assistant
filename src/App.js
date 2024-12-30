@@ -85,28 +85,26 @@ function App() {
 
     return (
         <div className="app-container">
-            <nav className="top-nav">
-                <div className="nav-brand">
-                    <button 
-                        className="hamburger-menu"
-                        onClick={() => setIsSideNavOpen(!isSideNavOpen)}
-                    >
-                        ☰
-                    </button>
-                    <span>AI PC Assistant</span>
-                </div>
-                <div className="nav-controls">
-                    <button 
-                        onClick={() => auth.signOut()}
-                        className="sign-out-button"
-                    >
-                        Sign Out
-                    </button>
-                </div>
-            </nav>
+            <div className="sign-out-container">
+                <button 
+                    onClick={() => auth.signOut()}
+                    className="sign-out-button"
+                >
+                    Sign Out
+                </button>
+            </div>
 
             <div className="main-content">
                 <div className={`side-nav ${isSideNavOpen ? 'open' : 'closed'}`}>
+                    <div className="nav-header">
+                        <button 
+                            className="hamburger-menu"
+                            onClick={() => setIsSideNavOpen(!isSideNavOpen)}
+                        >
+                            ☰
+                        </button>
+                        <span className="nav-title">AI PC Assistant</span>
+                    </div>
                     <div className="nav-content">
                         <ul>
                             <li className="active">Chat</li>
