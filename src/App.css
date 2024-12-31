@@ -93,8 +93,8 @@
 
 /* Adjust closed state */
 .side-nav.closed {
-    width: 60px;
-    min-width: 60px;
+    width: 0;
+    min-width: 0;
 }
 
 .side-nav.closed .nav-footer {
@@ -506,8 +506,13 @@ body.dark-mode .menu-button {
     border: none;
     font-size: 24px;
     cursor: pointer;
-    padding: 5px;
+    padding: 8px;
     color: rgb(0, 0, 0);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .hamburger-menu:hover {
@@ -601,6 +606,7 @@ body.dark-mode .typewriter {
     position: sticky;
     top: 0;
     z-index: 1000;
+    white-space: nowrap;
 }
 
 .nav-title {
@@ -623,7 +629,7 @@ body.dark-mode .nav-title {
 }
 
 body.dark-mode .nav-header {
-    background: #1e1f20;
+    background: #282a2c00;
 }
 
 body.dark-mode .hamburger-menu {
