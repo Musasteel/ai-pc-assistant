@@ -192,33 +192,59 @@
     border-top: 1px solid #e5e5e5;
     background-color: white;
     display: flex;
-    gap: 1rem;
+    gap: 0.5rem;
+    align-items: center;
+    position: relative;
 }
 
 .chat-input {
     flex: 1;
-    padding: 12px;
+    padding: 12px 16px;
+    padding-right: 50px;
     border: 1px solid #e5e5e5;
-    border-radius: 8px;
+    border-radius: 20px;
     font-size: 1rem;
     resize: none;
     outline: none;
+    height: 45px;
+    min-height: 45px;
+    max-height: 45px;
 }
 
 .send-button {
-    padding: 0.8rem 1.5rem;
-    background-color: #2196f3;
-    color: white;
+    position: absolute;
+    right: 30px;
+    padding: 10px;
+    background-color: transparent;
+    color: #2196f3;
     border: none;
-    border-radius: 8px;
-    font-size: 1rem;
+    border-radius: 50%;
+    font-size: 20px;
     cursor: pointer;
-    min-width: 80px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.send-button:hover {
+    background-color: rgba(33, 150, 243, 0.1);
 }
 
 .send-button:disabled {
-    background-color: #bdbdbd;
+    color: #bdbdbd;
     cursor: not-allowed;
+}
+
+/* Dark mode adjustments */
+body.dark-mode .send-button {
+    color: #fff;
+}
+
+body.dark-mode .send-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Sign Out Button */
@@ -388,8 +414,8 @@ body.dark-mode .assistant-message {
 }
 
 body.dark-mode .chat-input {
-    background: #1e1f20;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #35383b;
+    border: 1px solid #282a2c;
     color: white;
 }
 
@@ -428,7 +454,7 @@ body.dark-mode .side-nav li.active {
 }
 
 body.dark-mode .input-container {
-    background: #1e1f20;
+    background: #282a2c;
     border-top: 1px solid #282a2c;
 }
 
@@ -600,7 +626,6 @@ body.dark-mode .typewriter {
     height: 60px;
     display: flex;
     align-items: center;
-    padding: 0 15px;
     background: #ffffff;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     position: sticky;

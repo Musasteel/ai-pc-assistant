@@ -163,7 +163,7 @@ function App() {
                             className="send-button"
                             disabled={loading}
                         >
-                            {loading ? "Loading..." : "Ask"}
+                            {loading ? "..." : "➤"}
                         </button>
                     </div>
                 </div>
