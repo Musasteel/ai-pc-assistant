@@ -5,16 +5,29 @@ from flask_cors import CORS
 from fuzzywuzzy import process
 from dotenv import load_dotenv
 from pathlib import Path
+from amazon_paapi import AmazonApi
+import re
+from datetime import datetime, timedelta
 
-# Load environment variables from ~/.env file
-load_dotenv(Path.home() / '.env')
+# Load environment variables
+load_dotenv(Path(__file__).parent / 'key.env')
 
 app = Flask(__name__)
 CORS(app)
-app.secret_key = os.urandom(24)  # Required for session management
+app.secret_key = os.urandom(24)
 
-# Initialize the Groq client
+# Initialize clients
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+amazon_api = AmazonApi(
+    key=os.getenv("AMAZON_ACCESS_KEY"),
+    secret=os.getenv("AMAZON_SECRET_KEY"),
+    tag=os.getenv("AMAZON_ASSOCIATE_TAG"),
+    country="US"  
+)
+
+# Simple cache for Amazon product results
+product_cache = {}
+CACHE_DURATION = timedelta(hours=1)
 
 # Define PC-related keywords for validation
 PC_KEYWORDS = {
@@ -30,84 +43,66 @@ PC_KEYWORDS = {
     'crucial', 'western digital', 'seagate', 'samsung', 'thermaltake',
     'cooler master', 'g.skill', 'kingston', 'sapphire', 'zotac',
     
-    # Specific Components
+    # Specific Components and other categories...
     'ddr4', 'ddr5', 'm.2', 'nvme', 'sata', 'atx', 'micro atx', 'mini itx',
-    'rgb', 'argb', 'displayport', 'hdmi', 'usb', 'pcie', 'ethernet',
-    'wifi', 'bluetooth', 'heatsink', 'thermal paste', 'air cooling',
-    'liquid cooling', 'aio', 'water cooling', 'cable management',
-    
-    # Performance Terms
-    'fps', 'refresh rate', 'resolution', 'clock speed', 'boost clock',
-    'bottleneck', 'latency', 'temps', 'voltage', 'wattage', 'tdp',
-    '1080p', '1440p', '4k', 'ultra', 'gaming pc', 'workstation',
-    
-    # Specific Product Lines
-    'geforce', 'rtx 4090', 'rtx 4080', 'rtx 4070', 'rtx 3090', 'rtx 3080',
-    'rtx 3070', 'rtx 3060', 'rx 7900', 'rx 6900', 'rx 6800', 'rx 6700',
-    'core i9', 'core i7', 'core i5', 'core i3', 'ryzen 9', 'ryzen 7',
-    'ryzen 5', 'ryzen 3', 'threadripper',
-    
-    # Building Terms
-    'build guide', 'tutorial', 'installation', 'setup', 'bios', 'uefi',
-    'drivers', 'mounting', 'screws', 'standoffs', 'thermal compound',
-    'cable ties', 'modular', 'non-modular', 'tempered glass',
-    
-    # Shopping Terms
-    'price', 'cost', 'worth', 'value', 'cheap', 'expensive', 'high-end',
-    'mid-range', 'budget build', 'premium', 'msrp', 'deal', 'sale',
-    'recommendation', 'suggest', 'compare', 'versus', 'vs',
-    
-    # Problems & Solutions
-    'troubleshoot', 'issue', 'problem', 'error', 'crash', 'blue screen',
-    'bsod', 'freeze', 'overheat', 'noise', 'loud', 'quiet', 'debug',
-    'fix', 'repair', 'replace', 'upgrade path'
+    'rgb', 'argb', 'displayport', 'hdmi', 'usb', 'pcie', 'ethernet'
 }
 
-# Updated system message to handle follow-up questions
-SYSTEM_MESSAGE = """You are a specialized PC building assistant. Format your responses in a clear, structured way:
+SYSTEM_MESSAGE = """You are a specialized PC building assistant with extensive knowledge of computer hardware. Your primary goal is to recommend current-generation components that provide the best value and performance. When making recommendations:
 
-1. Use bullet points or numbered lists for steps and components
-2. Break down complex answers into sections with headers
-3. Keep paragraphs short and focused
-4. Use line breaks between sections
-5. When listing parts or specifications, use a clear list format
+1. Always format product recommendations with double brackets: [[Product Name]]
+2. Follow these guidelines for current generation awareness:
 
-For example, if someone asks about building a gaming PC, structure it like:
+Component Selection Guidelines:
+- Always recommend the most recent generation of components available as of the current date
+- For CPUs, specify the generation (e.g., "13th/14th gen" for Intel, "7000 series" for AMD)
+- For RAM, specify the generation and speed (e.g., "DDR5-6000")
+- For storage, specify the interface generation (e.g., "PCIe Gen 4", "PCIe Gen 5")
 
-Budget Breakdown:
-• CPU: $300 - Recommended: [specific model]
-• GPU: $500 - Recommended: [specific model]
-• etc.
+Price-Performance Guidelines:
+- Consider the release date and price-to-performance ratio
+- Factor in real-world availability and pricing
+- Account for user's budget constraints
 
-Key Considerations:
-1. [First point]
-2. [Second point]
-3. [Third point]
+Example Format:
 
-Next Steps:
-- [Action item 1]
-- [Action item 2]
+Recommended Core Components:
+• CPU: [[Latest Generation CPU Model]]
+• GPU: [[Latest Generation GPU Model]]
+• RAM: [[Current Gen RAM with Speed]]
 
-Remember to maintain this structured format in all responses."""
+Try to keep responses concise and use bullet points where applicable. Additionally only reccomened one product per category, and provide only the link to the reccomended part. (i.e. instead of reccommending both an AMD and NVIDIA graphics card, choose one and reccommend it)
 
+Always specify the generation/series in your recommendations to help users identify current components."""
 
+def extract_generation_info(product_name):
+    """Extract generation information from product names"""
+    product_lower = product_name.lower()
+    generation_indicators = {
+        'cpu_intel': r'i[3579]-1[0-9]',  # Intel 10th gen and up
+        'cpu_amd': r'ryzen [3579] [567]',  # Ryzen 5000 and up
+        'gpu_nvidia': r'rtx [234]',  # RTX 20, 30, 40 series
+        'gpu_amd': r'rx [567]',  # RX 5000, 6000, 7000 series
+        'ram': r'ddr[45]',  # DDR4 or DDR5
+        'storage': r'pcie [45]'  # PCIe Gen 4 or 5
+    }
+    
+    for component_type, pattern in generation_indicators.items():
+        if re.search(pattern, product_lower):
+            return component_type
+    return None
 
 def is_pc_related(question, threshold=70):
-    """
-    Check if the question is PC-related using fuzzy matching.
-    threshold: minimum similarity score (0-100) to consider a match
-    """
-    # Split the question into words
+    """Check if the question is PC-related using fuzzy matching"""
     words = question.lower().split()
     
-    # Check each word against our keywords
+    # Check single words
     for word in words:
-        # Get the best match and score for this word
         best_match, score = process.extractOne(word, PC_KEYWORDS)
         if score >= threshold:
             return True
             
-    # Check for two-word combinations (for terms like "graphics card")
+    # Check two-word combinations
     if len(words) >= 2:
         two_word_phrases = [' '.join(words[i:i+2]) for i in range(len(words)-1)]
         for phrase in two_word_phrases:
@@ -117,9 +112,102 @@ def is_pc_related(question, threshold=70):
     
     return False
 
+def get_cached_product(product_name):
+    """Get product from cache if it exists and is not expired"""
+    if product_name in product_cache:
+        cache_entry = product_cache[product_name]
+        if datetime.now() - cache_entry['timestamp'] < CACHE_DURATION:
+            return cache_entry['data']
+    return None
+
+def cache_product(product_name, data):
+    """Cache product data with timestamp"""
+    product_cache[product_name] = {
+        'data': data,
+        'timestamp': datetime.now()
+    }
+
+def clean_amazon_url(url):
+    """Clean Amazon URL to remove tracking parameters and add affiliate tag"""
+    asin_match = re.search(r'/dp/([A-Z0-9]{10})', url)
+    if asin_match:
+        asin = asin_match.group(1)
+        return f"https://www.amazon.com/dp/{asin}?tag={os.getenv('AMAZON_ASSOCIATE_TAG')}"
+    
+    product_name = re.search(r'k=([^&]+)', url)
+    if product_name:
+        return f"https://www.amazon.com/s?k={product_name.group(1)}&tag={os.getenv('AMAZON_ASSOCIATE_TAG')}"
+    
+    return url
+
+def search_amazon(product_name):
+    """Search Amazon with caching"""
+    cached_result = get_cached_product(product_name)
+    if cached_result:
+        return cached_result
+
+    try:
+        response = amazon_api.search_items(
+            keywords=product_name,
+            search_index='Electronics',
+            item_count=1
+        )
+        
+        if response and 'Items' in response and response['Items']:
+            item = response['Items'][0]
+            original_url = item.get('DetailPageURL', '')
+            clean_url = clean_amazon_url(original_url)
+            
+            result = {
+                'name': product_name,
+                'url': clean_url,
+                'price': item.get('Offers', {}).get('Listings', [{}])[0].get('Price', {}).get('DisplayAmount', 'Check price on Amazon')
+            }
+            cache_product(product_name, result)
+            return result
+            
+    except Exception as e:
+        print(f"Error searching for {product_name}: {e}")
+    
+    # Fallback: Create a clean search URL
+    encoded_name = product_name.replace(' ', '+')
+    result = {
+        'name': product_name,
+        'url': f"https://www.amazon.com/s?k={encoded_name}&tag={os.getenv('AMAZON_ASSOCIATE_TAG')}",
+        'price': 'Check price on Amazon'
+    }
+    cache_product(product_name, result)
+    return result
+
+def process_response_with_affiliate_links(assistant_response):
+    """Process the assistant's response and add affiliate links"""
+    products = list(set(re.findall(r'\[\[(.*?)\]\]', assistant_response)))
+    
+    if not products:
+        return assistant_response, []
+    
+    affiliate_links = []
+    modified_response = assistant_response
+    
+    for product in products:
+        result = search_amazon(product)
+        if result:
+            affiliate_link = f"• {result['name']}: {result['price']} - [View on Amazon]({result['url']})"
+            affiliate_links.append(affiliate_link)
+            
+            modified_response = modified_response.replace(
+                f"[[{product}]]",
+                f"{product} ({result['price']})"
+            )
+    
+    if affiliate_links:
+        modified_response += "\n\nProduct Links:\n" + "\n".join(affiliate_links)
+    
+    return modified_response, affiliate_links
+
 @app.route('/api/ask', methods=['POST'])
 def ask_assistant():
-    """Endpoint to process PC-related questions and return the assistant's response."""
+    """Endpoint to process PC-related questions and return response with affiliate links"""
     data = request.json
     user_input = data.get("question", "")
     
@@ -143,44 +231,39 @@ def ask_assistant():
                     "Could you please ask something related to computer hardware, building a PC, "
                     "or component selection?"
         })
-
+    
     try:
-        # Prepare conversation history for context
         messages = [{"role": "system", "content": SYSTEM_MESSAGE}]
-        
-        # Add conversation history (last 5 exchanges)
-        for msg in session['conversation'][-5:]:
-            messages.append(msg)
-            
-        # Add current user message
+        messages.extend(session['conversation'][-5:])
         messages.append({"role": "user", "content": user_input})
 
-        # Create a chat completion with conversation history
         completion = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=messages,
             temperature=0.7,
             max_tokens=2048,
             top_p=1,
-            stream=False,
-            stop=None,
+            stream=False
         )
 
-        # Extract the assistant's reply
-        reply = completion.choices[0].message.content
+        initial_reply = completion.choices[0].message.content
+        processed_reply, affiliate_links = process_response_with_affiliate_links(initial_reply)
 
         # Update conversation history
         session['conversation'].append({"role": "user", "content": user_input})
-        session['conversation'].append({"role": "assistant", "content": reply})
-        
-        # Suggest follow-up if not already present in reply
-        if not any(phrase in reply.lower() for phrase in [
+        session['conversation'].append({"role": "assistant", "content": processed_reply})
+
+        # Add follow-up suggestion if not present
+        if not any(phrase in processed_reply.lower() for phrase in [
             "anything else", "follow-up", "more questions", "let me know if",
             "feel free to ask", "would you like to know"
         ]):
-            reply += "\n\nFeel free to ask any follow-up questions about your PC build!"
+            processed_reply += "\n\nFeel free to ask any follow-up questions about your PC build!"
 
-        return jsonify({"reply": reply})
+        return jsonify({
+            "reply": processed_reply,
+            "affiliate_links": affiliate_links
+        })
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
